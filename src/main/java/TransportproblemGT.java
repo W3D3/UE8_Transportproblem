@@ -1,12 +1,12 @@
 import gurobi.*;
 
-public class Transportproblem {
+public class TransportproblemGT {
 
     private static final int[][] c = {{4, 2, 3, 1}, {5, 6, 4, 0}};
     private static final int[] a = {20, 12};
     private static final int anzahlErzeuger = a.length;
     private static final int[] b = {10, 10, 5, 7};
-    private static final int anzahlAbnehmer = 4;
+    private static final int anzahlAbnehmer = b.length;
 
     public static void main(String[] args) throws GRBException {
 
@@ -38,7 +38,7 @@ public class Transportproblem {
             for (int i = 0; i < anzahlErzeuger; i++) {
                 bedarf.addTerm(1, x[i][j]);
             }
-            model.addConstr(bedarf, GRB.EQUAL, b[j], "bedarf_" + j);
+            model.addConstr(bedarf, GRB.GREATER_EQUAL, b[j], "bedarf_" + j);
         }
 
         GRBLinExpr transportieren;
@@ -47,14 +47,14 @@ public class Transportproblem {
             for (int j = 0; j < anzahlAbnehmer; j++) {
                 transportieren.addTerm(1, x[i][j]);
             }
-            model.addConstr(transportieren, GRB.EQUAL, a[i], "transport_" + i);
+            model.addConstr(transportieren, GRB.GREATER_EQUAL, a[i], "transport_" + i);
         }
 
         //solve
         model.optimize();
 
-        model.write("transportproblem.lp");
-        model.write("transportproblem.sol");
+        model.write("transportproblem_GT.lp");
+        model.write("transportproblem_GT.sol");
 
         model.dispose();
         environment.dispose();
